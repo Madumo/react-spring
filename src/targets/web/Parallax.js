@@ -253,22 +253,20 @@ export default class Parallax extends React.PureComponent {
           ...style,
         }}
         className={className}>
-        {this.state.ready && (
-          <div
-            ref={node => (this.content = node)}
-            style={{
-              position: 'absolute',
-              [horizontal ? 'height' : 'width']: '100%',
-              WebkitTransform: START_TRANSLATE,
-              MsTransform: START_TRANSLATE,
-              transform: START_TRANSLATE_3D,
-              overflow: 'hidden',
-              [horizontal ? 'width' : 'height']: this.space * pages,
-              ...innerStyle,
-            }}>
-            <Provider value={this}>{children}</Provider>
-          </div>
-        )}
+        <div
+          ref={node => (this.content = node)}
+          style={{
+            position: 'absolute',
+            [horizontal ? 'height' : 'width']: '100%',
+            WebkitTransform: START_TRANSLATE,
+            MsTransform: START_TRANSLATE,
+            transform: START_TRANSLATE_3D,
+            overflow: 'hidden',
+            [horizontal ? 'width' : 'height']: this.space * pages,
+            ...innerStyle,
+          }}>
+          <Provider value={this}>{children}</Provider>
+        </div>
       </div>
     )
   }
