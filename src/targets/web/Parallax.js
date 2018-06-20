@@ -175,9 +175,9 @@ export default class Parallax extends React.PureComponent {
     this.space = this.container[horizontal ? 'clientWidth' : 'clientHeight']
     if (scrolling) this.current = this.container[scrollType]
     else this.container[scrollType] = this.current = this.offset * this.space
-    if (this.content)
-      this.content.style[horizontal ? 'width' : 'height'] = `${this.space *
-        this.props.pages}px`
+    // if (this.content)
+    //   this.content.style[horizontal ? 'width' : 'height'] = `${this.space *
+    //     this.props.pages}px`
     this.layers.forEach(layer => {
       layer.setHeight(this.space, true)
       layer.setPosition(this.space, this.current, true)
@@ -262,7 +262,6 @@ export default class Parallax extends React.PureComponent {
             MsTransform: START_TRANSLATE,
             transform: START_TRANSLATE_3D,
             overflow: 'hidden',
-            [horizontal ? 'width' : 'height']: this.space * pages,
             ...innerStyle,
           }}>
           <Provider value={this}>{children}</Provider>

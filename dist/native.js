@@ -2,7 +2,6 @@ import _extends from '@babel/runtime/helpers/builtin/es6/extends'
 import _inheritsLoose from '@babel/runtime/helpers/builtin/es6/inheritsLoose'
 import React from 'react'
 import _objectWithoutProperties from '@babel/runtime/helpers/builtin/es6/objectWithoutProperties'
-import _assertThisInitialized from '@babel/runtime/helpers/builtin/es6/assertThisInitialized'
 
 var bugfixes = undefined
 var applyAnimatedValues = undefined
@@ -650,26 +649,26 @@ var SpringAnimation =
           var aAcceleration =
             _this._tension * (_this._to - tempPosition) -
             _this._friction * tempVelocity
-          var tempPosition = position + aVelocity * step / 2
-          var tempVelocity = velocity + aAcceleration * step / 2
+          var tempPosition = position + (aVelocity * step) / 2
+          var tempVelocity = velocity + (aAcceleration * step) / 2
           var bVelocity = tempVelocity
           var bAcceleration =
             _this._tension * (_this._to - tempPosition) -
             _this._friction * tempVelocity
-          tempPosition = position + bVelocity * step / 2
-          tempVelocity = velocity + bAcceleration * step / 2
+          tempPosition = position + (bVelocity * step) / 2
+          tempVelocity = velocity + (bAcceleration * step) / 2
           var cVelocity = tempVelocity
           var cAcceleration =
             _this._tension * (_this._to - tempPosition) -
             _this._friction * tempVelocity
-          tempPosition = position + cVelocity * step / 2
-          tempVelocity = velocity + cAcceleration * step / 2
+          tempPosition = position + (cVelocity * step) / 2
+          tempVelocity = velocity + (cAcceleration * step) / 2
           var dVelocity = tempVelocity
           var dAcceleration =
             _this._tension * (_this._to - tempPosition) -
             _this._friction * tempVelocity
-          tempPosition = position + cVelocity * step / 2
-          tempVelocity = velocity + cAcceleration * step / 2
+          tempPosition = position + (cVelocity * step) / 2
+          tempVelocity = velocity + (cAcceleration * step) / 2
           var dxdt = (aVelocity + 2 * (bVelocity + cVelocity) + dVelocity) / 6
           var dvdt =
             (aAcceleration +
@@ -1212,7 +1211,7 @@ var Spring =
     _inheritsLoose(Spring, _React$Component)
 
     function Spring() {
-      var _temp, _this
+      var _this
 
       for (
         var _len = arguments.length, args = new Array(_len), _key = 0;
@@ -1222,21 +1221,21 @@ var Spring =
         args[_key] = arguments[_key]
       }
 
-      return (
-        ((_temp = _this =
-          _React$Component.call.apply(_React$Component, [this].concat(args)) ||
-          this),
-        (_this.state = {
-          props: undefined,
-        }),
-        (_this.animations = {}),
-        (_this.callback = function() {
-          if (_this.props.onFrame)
-            _this.props.onFrame(_this.animatedProps.__getValue())
-          !_this.props.native && _this.forceUpdate()
-        }),
-        _temp) || _assertThisInitialized(_this)
-      )
+      _this =
+        _React$Component.call.apply(_React$Component, [this].concat(args)) ||
+        this
+      _this.state = {
+        props: undefined,
+      }
+      _this.animations = {}
+
+      _this.callback = function() {
+        if (_this.props.onFrame)
+          _this.props.onFrame(_this.animatedProps.__getValue())
+        !_this.props.native && _this.forceUpdate()
+      }
+
+      return _this
     }
 
     var _proto = Spring.prototype
@@ -1947,7 +1946,7 @@ var Keyframes =
     _inheritsLoose(Keyframes, _React$PureComponent)
 
     function Keyframes() {
-      var _temp, _this
+      var _this
 
       for (
         var _len = arguments.length, args = new Array(_len), _key = 0;
@@ -1957,35 +1956,35 @@ var Keyframes =
         args[_key] = arguments[_key]
       }
 
-      return (
-        ((_temp = _this =
-          _React$PureComponent.call.apply(
-            _React$PureComponent,
-            [this].concat(args)
-          ) || this),
-        (_this.guid = 0),
-        (_this.state = {
-          primitive: undefined,
-          props: {},
-          oldProps: {},
-          resolve: function resolve() {
-            return null
-          },
-        }),
-        (_this.next = function(primitive, props) {
-          return new Promise(function(resolve) {
-            _this.setState(function(state) {
-              return {
-                primitive: primitive,
-                props: props,
-                oldProps: _extends({}, _this.state.props),
-                resolve: resolve,
-              }
-            })
+      _this =
+        _React$PureComponent.call.apply(
+          _React$PureComponent,
+          [this].concat(args)
+        ) || this
+      _this.guid = 0
+      _this.state = {
+        primitive: undefined,
+        props: {},
+        oldProps: {},
+        resolve: function resolve() {
+          return null
+        },
+      }
+
+      _this.next = function(primitive, props) {
+        return new Promise(function(resolve) {
+          _this.setState(function(state) {
+            return {
+              primitive: primitive,
+              props: props,
+              oldProps: _extends({}, _this.state.props),
+              resolve: resolve,
+            }
           })
-        }),
-        _temp) || _assertThisInitialized(_this)
-      )
+        })
+      }
+
+      return _this
     }
 
     var _proto = Keyframes.prototype
@@ -2464,7 +2463,7 @@ function parse255(str) {
 
 function parse360(str) {
   var int = parseFloat(str)
-  return ((int % 360 + 360) % 360) / 360
+  return (((int % 360) + 360) % 360) / 360
 }
 
 function parse1(str) {

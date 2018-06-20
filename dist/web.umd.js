@@ -350,7 +350,7 @@
     return e < 0 ? 0 : 255 < e ? 255 : e
   }
   function A(t) {
-    return ((parseFloat(t) % 360 + 360) % 360) / 360
+    return (((parseFloat(t) % 360) + 360) % 360) / 360
   }
   function S(t) {
     var e = parseFloat(t)
@@ -851,18 +851,18 @@
             var s = 0.001,
               u = e,
               l = y._tension * (y._to - n) - y._friction * r,
-              c = ((n = t + u * s / 2), (r = e + l * s / 2)),
+              c = ((n = t + (u * s) / 2), (r = e + (l * s) / 2)),
               f = y._tension * (y._to - n) - y._friction * r
-            n = t + c * s / 2
-            var p = (r = e + f * s / 2),
+            n = t + (c * s) / 2
+            var p = (r = e + (f * s) / 2),
               h = y._tension * (y._to - n) - y._friction * r
-            n = t + p * s / 2
-            var d = (r = e + h * s / 2),
+            n = t + (p * s) / 2
+            var d = (r = e + (h * s) / 2),
               m = y._tension * (y._to - n) - y._friction * r
-            ;(n = t + p * s / 2),
-              (r = e + h * s / 2),
-              (t += (u + 2 * (c + p) + d) / 6 * s),
-              (e += (l + 2 * (f + h) + m) / 6 * s)
+            ;(n = t + (p * s) / 2),
+              (r = e + (h * s) / 2),
+              (t += ((u + 2 * (c + p) + d) / 6) * s),
+              (e += ((l + 2 * (f + h) + m) / 6) * s)
           }
           if (
             ((y._lastTime = i),
@@ -1179,49 +1179,39 @@
       )
     })(g.Component)
   }
-  function Y(t) {
-    if (void 0 === t)
-      throw new ReferenceError(
-        "this hasn't been initialised - super() hasn't been called"
-      )
-    return t
-  }
-  var J = {
+  var Y = {
       default: { tension: 170, friction: 26 },
       gentle: { tension: 120, friction: 14 },
       wobbly: { tension: 180, friction: 12 },
       stiff: { tension: 210, friction: 20 },
       slow: { tension: 280, friction: 60 },
     },
-    Q = function(t, e) {
+    J = function(t, e) {
       return 'function' == typeof t ? t(e) : t
     },
-    Z = function(t, e) {
+    Q = function(t, e) {
       var n,
         r = e[0],
         i = e[1]
       return P({}, t, (((n = {})[r] = new U(i)), n))
     },
-    tt = (function(o) {
+    Z = (function(i) {
       function t() {
-        for (
-          var t, e, n = arguments.length, r = new Array(n), i = 0;
-          i < n;
-          i++
-        )
-          r[i] = arguments[i]
+        for (var t, e = arguments.length, n = new Array(e), r = 0; r < e; r++)
+          n[r] = arguments[r]
         return (
-          (t = e = o.call.apply(o, [this].concat(r)) || this),
-          (e.state = { props: void 0 }),
-          (e.animations = {}),
-          (e.callback = function() {
-            e.props.onFrame && e.props.onFrame(e.animatedProps.__getValue()),
-              !e.props.native && e.forceUpdate()
+          ((t = i.call.apply(i, [this].concat(n)) || this).state = {
+            props: void 0,
           }),
-          t || Y(e)
+          (t.animations = {}),
+          (t.callback = function() {
+            t.props.onFrame && t.props.onFrame(t.animatedProps.__getValue()),
+              !t.props.native && t.forceUpdate()
+          }),
+          t
         )
       }
-      T(t, o)
+      T(t, i)
       var e = t.prototype
       return (
         (e.componentWillUnmount = function() {
@@ -1297,7 +1287,7 @@
                     }))
                 }
                 return (
-                  Q(w, i) && a.animation.setValue(p),
+                  J(w, i) && a.animation.setValue(p),
                   (a.stopped = !1),
                   (a.onFinish = function(t) {
                     if (
@@ -1316,7 +1306,7 @@
                   }),
                   (a.start = function(e) {
                     if (a.animation.__getValue() === p) return a.onFinish(e)
-                    K(a.animation, P({ to: p }, Q(b, i)), g).start(function(t) {
+                    K(a.animation, P({ to: p }, J(b, i)), g).start(function(t) {
                       return t.finished && a.onFinish(e)
                     })
                   }),
@@ -1381,7 +1371,7 @@
             r = t.native,
             i = (t.children, t.render, this.getForwardProps(t)),
             o = Object.entries(P({}, e, n))
-          return r ? o.reduce(Z, i) : P({}, e, n, i)
+          return r ? o.reduce(Q, i) : P({}, e, n, i)
         }),
         (e.getForwardProps = function(t) {
           void 0 === t && (t = this.props)
@@ -1438,30 +1428,30 @@
         t
       )
     })(g.Component)
-  tt.defaultProps = {
+  Z.defaultProps = {
     from: {},
     to: {},
-    config: J.default,
+    config: Y.default,
     native: !1,
     immediate: !1,
     reset: !1,
     impl: G,
     inject: e,
   }
-  var et = function() {
+  var tt = function() {
       return null
     },
-    nt = function(t, e) {
+    et = function(t, e) {
       return void 0 === t && (t = {}), 'function' == typeof t ? t(e) : t
     },
-    rt = function(t) {
+    nt = function(t) {
       var e = t.keys,
         n = t.children,
         r = t.render,
         i = t.items,
         o = y(t, ['keys', 'children', 'render', 'items'])
       return (
-        (n = r || n || et),
+        (n = r || n || tt),
         (e = 'function' == typeof e ? i.map(e) : e),
         Array.isArray(n) ||
           ((n = [n]),
@@ -1473,7 +1463,7 @@
         P({ keys: e, children: n, items: i }, o)
       )
     },
-    it = (function(n) {
+    rt = (function(n) {
       function t(t) {
         var e
         return (
@@ -1486,7 +1476,7 @@
         (t.getDerivedStateFromProps = function(t, e) {
           var n = e.transitions,
             r = e.prevProps,
-            i = rt(t),
+            i = nt(t),
             o = i.keys,
             a = i.children,
             s = i.items,
@@ -1494,7 +1484,7 @@
             l = i.enter,
             c = i.leave,
             f = i.update,
-            p = rt(r),
+            p = nt(r),
             h = p.keys,
             d = (p.children, p.items),
             m = n.map(function(t) {
@@ -1528,18 +1518,18 @@
                       destroyed: !0,
                       prevKey: n,
                       key: t.key + '_',
-                      to: t.destroyed ? t.to : nt(c, d ? d[h.indexOf(n)] : n),
+                      to: t.destroyed ? t.to : et(c, d ? d[h.indexOf(n)] : n),
                     })
                   : P({}, t, {
                       children: a[r] || t.children,
-                      to: (f && -1 !== b.indexOf(t.key) && nt(f, i)) || t.to,
+                      to: (f && -1 !== b.indexOf(t.key) && et(f, i)) || t.to,
                     })
                 : {
                     children: a[r],
                     key: n,
                     item: i,
-                    to: nt(l, i),
-                    from: nt(u, i),
+                    to: et(l, i),
+                    from: et(u, i),
                   }
             }))
           var k = o.map(function(e) {
@@ -1564,7 +1554,7 @@
             e = (t.from, t.enter, t.leave, t.native),
             n = void 0 !== e && e,
             r = t.config,
-            i = void 0 === r ? J.default : r,
+            i = void 0 === r ? Y.default : r,
             c = (t.keys, t.items, t.onFrame),
             f = t.onRest,
             p = P(
@@ -1590,7 +1580,7 @@
               a = e.from,
               s = y(e, ['prevKey', 'key', 'item', 'children', 'from'])
             return g.createElement(
-              tt,
+              Z,
               P(
                 {
                   ref: function(t) {
@@ -1636,7 +1626,7 @@
         t
       )
     })(g.PureComponent),
-    ot = (function(t) {
+    it = (function(t) {
       function e() {
         return t.apply(this, arguments) || this
       }
@@ -1664,7 +1654,7 @@
             u = t.native,
             l = void 0 !== u && u,
             c = t.config,
-            f = void 0 === c ? J.default : c,
+            f = void 0 === c ? Y.default : c,
             p = t.keys,
             h = t.delay,
             d = t.onRest,
@@ -1684,7 +1674,7 @@
           return (o || i).map(function(t, r) {
             var e = 0 === r && h
             return g.createElement(
-              tt,
+              Z,
               P(
                 {
                   ref: function(t) {
@@ -1715,17 +1705,12 @@
         e
       )
     })(g.PureComponent),
-    at = (function(o) {
+    ot = (function(r) {
       function t() {
-        for (
-          var t, i, e = arguments.length, n = new Array(e), r = 0;
-          r < e;
-          r++
-        )
-          n[r] = arguments[r]
+        for (var i, t = arguments.length, e = new Array(t), n = 0; n < t; n++)
+          e[n] = arguments[n]
         return (
-          (t = i = o.call.apply(o, [this].concat(n)) || this),
-          (i.guid = 0),
+          ((i = r.call.apply(r, [this].concat(e)) || this).guid = 0),
           (i.state = {
             primitive: void 0,
             props: {},
@@ -1746,10 +1731,10 @@
               })
             })
           }),
-          t || Y(i)
+          i
         )
       }
-      T(t, o)
+      T(t, r)
       var e = t.prototype
       return (
         (e.componentDidMount = function() {
@@ -1842,26 +1827,26 @@
         t
       )
     })(g.PureComponent)
-  ;(at.create = function(n) {
+  ;(ot.create = function(n) {
     return function(e) {
       return function(t) {
-        return g.createElement(at, P({ primitive: n, states: e }, t))
+        return g.createElement(ot, P({ primitive: n, states: e }, t))
       }
     }
   }),
-    (at.Spring = at.create(tt)),
-    (at.Trail = at.create(ot)),
-    (at.Transition = at.create(it))
-  var st = X('div'),
-    ut = g.createContext(null),
-    lt = ut.Provider,
-    ct = ut.Consumer
-  function ft(t) {
+    (ot.Spring = ot.create(Z)),
+    (ot.Trail = ot.create(it)),
+    (ot.Transition = ot.create(rt))
+  var at = X('div'),
+    st = g.createContext(null),
+    ut = st.Provider,
+    lt = st.Consumer
+  function ct(t) {
     return t ? 'scrollLeft' : 'scrollTop'
   }
-  var pt = 'translate3d(0px,0px,0px)',
-    ht = 'translate(0px,0px)',
-    dt = (function(t) {
+  var ft = 'translate3d(0px,0px,0px)',
+    pt = 'translate(0px,0px)',
+    ht = (function(t) {
       function e() {
         return t.apply(this, arguments) || this
       }
@@ -1930,11 +1915,11 @@
             s = this.animatedTranslate.interpolate({
               range: [0, 1],
               output: a
-                ? [pt, 'translate3d(1px,0,0)']
-                : [pt, 'translate3d(0,1px,0)'],
+                ? [ft, 'translate3d(1px,0,0)']
+                : [ft, 'translate3d(0,1px,0)'],
             })
           return g.createElement(
-            st,
+            at,
             P({}, o, {
               className: i,
               style: P(
@@ -1958,7 +1943,7 @@
         }),
         (n.render = function() {
           var e = this
-          return g.createElement(ct, null, function(t) {
+          return g.createElement(lt, null, function(t) {
             return (
               t && !e.parent && ((e.parent = t), e.initialize()),
               e.renderLayer()
@@ -1968,14 +1953,13 @@
         e
       )
     })(g.PureComponent)
-  dt.defaultProps = { factor: 1, offset: 0, speed: 0 }
-  var mt = (function(o) {
+  ht.defaultProps = { factor: 1, offset: 0, speed: 0 }
+  var dt = (function(r) {
     function t() {
-      for (var t, i, e = arguments.length, n = new Array(e), r = 0; r < e; r++)
-        n[r] = arguments[r]
+      for (var i, t = arguments.length, e = new Array(t), n = 0; n < t; n++)
+        e[n] = arguments[n]
       return (
-        (t = i = o.call.apply(o, [this].concat(n)) || this),
-        (i.state = { ready: !1 }),
+        ((i = r.call.apply(r, [this].concat(e)) || this).state = { ready: !1 }),
         (i.layers = []),
         (i.space = 0),
         (i.current = 0),
@@ -1993,21 +1977,18 @@
         (i.onScroll = function(t) {
           var e = i.props.horizontal
           i.busy ||
-            ((i.busy = !0), i.scrollerRaf(), (i.current = t.target[ft(e)]))
+            ((i.busy = !0), i.scrollerRaf(), (i.current = t.target[ct(e)]))
         }),
         (i.update = function() {
           var t = i.props,
             e = t.scrolling,
             n = t.horizontal,
-            r = ft(n)
+            r = ct(n)
           i.container &&
             ((i.space = i.container[n ? 'clientWidth' : 'clientHeight']),
             e
               ? (i.current = i.container[r])
               : (i.container[r] = i.current = i.offset * i.space),
-            i.content &&
-              (i.content.style[n ? 'width' : 'height'] =
-                i.space * i.props.pages + 'px'),
             i.layers.forEach(function(t) {
               t.setHeight(i.space, !0), t.setPosition(i.space, i.current, !0)
             }))
@@ -2018,10 +1999,10 @@
         (i.scrollStop = function(t) {
           return i.animatedScroll && i.animatedScroll.stopAnimation()
         }),
-        t || Y(i)
+        i
       )
     }
-    T(t, o)
+    T(t, r)
     var e = t.prototype
     return (
       (e.scrollTo = function(t) {
@@ -2029,7 +2010,7 @@
           n = e.horizontal,
           r = e.config,
           i = e.impl,
-          o = ft(n)
+          o = ct(n)
         this.scrollStop(), (this.offset = t)
         var a = this.container
         ;(this.animatedScroll = new U(a[o])),
@@ -2056,12 +2037,11 @@
           n = this.props,
           r = n.style,
           i = n.innerStyle,
-          o = n.pages,
-          a = n.className,
-          s = n.scrolling,
-          u = n.children,
-          l = n.horizontal,
-          c = s ? 'scroll' : 'hidden'
+          o = (n.pages, n.className),
+          a = n.scrolling,
+          s = n.children,
+          u = n.horizontal,
+          l = a ? 'scroll' : 'hidden'
         return g.createElement(
           'div',
           {
@@ -2069,24 +2049,24 @@
               return (e.container = t)
             },
             onScroll: this.onScroll,
-            onWheel: s ? this.scrollStop : null,
-            onTouchStart: s ? this.scrollStop : null,
+            onWheel: a ? this.scrollStop : null,
+            onTouchStart: a ? this.scrollStop : null,
             style: P(
               {
                 position: 'absolute',
                 width: '100%',
                 height: '100%',
-                overflow: c,
-                overflowY: l ? 'hidden' : c,
-                overflowX: l ? c : 'hidden',
+                overflow: l,
+                overflowY: u ? 'hidden' : l,
+                overflowX: u ? l : 'hidden',
                 WebkitOverflowScrolling: 'touch',
-                WebkitTransform: ht,
-                MsTransform: ht,
-                transform: pt,
+                WebkitTransform: pt,
+                MsTransform: pt,
+                transform: ft,
               },
               r
             ),
-            className: a,
+            className: o,
           },
           g.createElement(
             'div',
@@ -2096,31 +2076,30 @@
               },
               style: P(
                 ((t = { position: 'absolute' }),
-                (t[l ? 'height' : 'width'] = '100%'),
-                (t.WebkitTransform = ht),
-                (t.MsTransform = ht),
-                (t.transform = pt),
+                (t[u ? 'height' : 'width'] = '100%'),
+                (t.WebkitTransform = pt),
+                (t.MsTransform = pt),
+                (t.transform = ft),
                 (t.overflow = 'hidden'),
-                (t[l ? 'width' : 'height'] = this.space * o),
                 t),
                 i
               ),
             },
-            g.createElement(lt, { value: this }, u)
+            g.createElement(ut, { value: this }, s)
           )
         )
       }),
       t
     )
   })(g.PureComponent)
-  ;(mt.Layer = dt),
-    (mt.defaultProps = {
-      config: J.slow,
+  ;(dt.Layer = ht),
+    (dt.defaultProps = {
+      config: Y.slow,
       scrolling: !0,
       horizontal: !1,
       impl: G,
     })
-  var _t = [
+  var mt = [
     'a',
     'abbr',
     'address',
@@ -2259,17 +2238,17 @@
     var n
     return P({}, t, (((n = {})[e] = X(e)), n))
   }, {})
-  Object.assign(X, _t)
-  ;(t.Spring = tt),
-    (t.Keyframes = at),
-    (t.Transition = it),
-    (t.Trail = ot),
-    (t.Parallax = mt),
-    (t.ParallaxLayer = dt),
+  Object.assign(X, mt)
+  ;(t.Spring = Z),
+    (t.Keyframes = ot),
+    (t.Transition = rt),
+    (t.Trail = it),
+    (t.Parallax = dt),
+    (t.ParallaxLayer = ht),
     (t.Animation = L),
     (t.SpringAnimation = G),
     (t.AnimatedValue = U),
-    (t.config = J),
+    (t.config = Y),
     (t.animated = X),
     (t.controller = K),
     (t.interpolate = function(t, e) {

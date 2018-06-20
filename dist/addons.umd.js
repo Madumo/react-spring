@@ -111,7 +111,7 @@
           }
         }),
         (t.sin = function(t) {
-          return 1 - Math.cos(t * Math.PI / 2)
+          return 1 - Math.cos((t * Math.PI) / 2)
         }),
         (t.circle = function(t) {
           return 1 - Math.sqrt(1 - t * t)
@@ -123,7 +123,9 @@
           void 0 === t && (t = 1)
           var n = t * Math.PI
           return function(t) {
-            return 1 - Math.pow(Math.cos(t * Math.PI / 2), 3) * Math.cos(t * n)
+            return (
+              1 - Math.pow(Math.cos((t * Math.PI) / 2), 3) * Math.cos(t * n)
+            )
           }
         }),
         (t.back = function(n) {
@@ -245,12 +247,13 @@
             ;(c =
               y._to -
               h *
-                ((r + a * s * _) / u * Math.sin(u * l) + _ * Math.cos(u * l))),
+                (((r + a * s * _) / u) * Math.sin(u * l) +
+                  _ * Math.cos(u * l))),
               (f =
                 a *
                   s *
                   h *
-                  (Math.sin(u * l) * (r + a * s * _) / u +
+                  ((Math.sin(u * l) * (r + a * s * _)) / u +
                     _ * Math.cos(u * l)) -
                 h *
                   (Math.cos(u * l) * (r + a * s * _) - u * _ * Math.sin(u * l)))

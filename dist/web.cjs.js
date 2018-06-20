@@ -17,9 +17,6 @@ var ReactDOM = _interopDefault(require('react-dom'))
 var _objectWithoutProperties = _interopDefault(
   require('@babel/runtime/helpers/builtin/objectWithoutProperties')
 )
-var _assertThisInitialized = _interopDefault(
-  require('@babel/runtime/helpers/builtin/assertThisInitialized')
-)
 
 var bugfixes = undefined
 var applyAnimatedValues = undefined
@@ -540,7 +537,7 @@ function parse255(str) {
 
 function parse360(str) {
   var int = parseFloat(str)
-  return ((int % 360 + 360) % 360) / 360
+  return (((int % 360) + 360) % 360) / 360
 }
 
 function parse1(str) {
@@ -1272,26 +1269,26 @@ var SpringAnimation =
           var aAcceleration =
             _this._tension * (_this._to - tempPosition) -
             _this._friction * tempVelocity
-          var tempPosition = position + aVelocity * step / 2
-          var tempVelocity = velocity + aAcceleration * step / 2
+          var tempPosition = position + (aVelocity * step) / 2
+          var tempVelocity = velocity + (aAcceleration * step) / 2
           var bVelocity = tempVelocity
           var bAcceleration =
             _this._tension * (_this._to - tempPosition) -
             _this._friction * tempVelocity
-          tempPosition = position + bVelocity * step / 2
-          tempVelocity = velocity + bAcceleration * step / 2
+          tempPosition = position + (bVelocity * step) / 2
+          tempVelocity = velocity + (bAcceleration * step) / 2
           var cVelocity = tempVelocity
           var cAcceleration =
             _this._tension * (_this._to - tempPosition) -
             _this._friction * tempVelocity
-          tempPosition = position + cVelocity * step / 2
-          tempVelocity = velocity + cAcceleration * step / 2
+          tempPosition = position + (cVelocity * step) / 2
+          tempVelocity = velocity + (cAcceleration * step) / 2
           var dVelocity = tempVelocity
           var dAcceleration =
             _this._tension * (_this._to - tempPosition) -
             _this._friction * tempVelocity
-          tempPosition = position + cVelocity * step / 2
-          tempVelocity = velocity + cAcceleration * step / 2
+          tempPosition = position + (cVelocity * step) / 2
+          tempVelocity = velocity + (cAcceleration * step) / 2
           var dxdt = (aVelocity + 2 * (bVelocity + cVelocity) + dVelocity) / 6
           var dvdt =
             (aAcceleration +
@@ -1834,7 +1831,7 @@ var Spring =
     _inheritsLoose(Spring, _React$Component)
 
     function Spring() {
-      var _temp, _this
+      var _this
 
       for (
         var _len = arguments.length, args = new Array(_len), _key = 0;
@@ -1844,21 +1841,21 @@ var Spring =
         args[_key] = arguments[_key]
       }
 
-      return (
-        ((_temp = _this =
-          _React$Component.call.apply(_React$Component, [this].concat(args)) ||
-          this),
-        (_this.state = {
-          props: undefined,
-        }),
-        (_this.animations = {}),
-        (_this.callback = function() {
-          if (_this.props.onFrame)
-            _this.props.onFrame(_this.animatedProps.__getValue())
-          !_this.props.native && _this.forceUpdate()
-        }),
-        _temp) || _assertThisInitialized(_this)
-      )
+      _this =
+        _React$Component.call.apply(_React$Component, [this].concat(args)) ||
+        this
+      _this.state = {
+        props: undefined,
+      }
+      _this.animations = {}
+
+      _this.callback = function() {
+        if (_this.props.onFrame)
+          _this.props.onFrame(_this.animatedProps.__getValue())
+        !_this.props.native && _this.forceUpdate()
+      }
+
+      return _this
     }
 
     var _proto = Spring.prototype
@@ -2569,7 +2566,7 @@ var Keyframes =
     _inheritsLoose(Keyframes, _React$PureComponent)
 
     function Keyframes() {
-      var _temp, _this
+      var _this
 
       for (
         var _len = arguments.length, args = new Array(_len), _key = 0;
@@ -2579,35 +2576,35 @@ var Keyframes =
         args[_key] = arguments[_key]
       }
 
-      return (
-        ((_temp = _this =
-          _React$PureComponent.call.apply(
-            _React$PureComponent,
-            [this].concat(args)
-          ) || this),
-        (_this.guid = 0),
-        (_this.state = {
-          primitive: undefined,
-          props: {},
-          oldProps: {},
-          resolve: function resolve() {
-            return null
-          },
-        }),
-        (_this.next = function(primitive, props) {
-          return new Promise(function(resolve) {
-            _this.setState(function(state) {
-              return {
-                primitive: primitive,
-                props: props,
-                oldProps: _extends({}, _this.state.props),
-                resolve: resolve,
-              }
-            })
+      _this =
+        _React$PureComponent.call.apply(
+          _React$PureComponent,
+          [this].concat(args)
+        ) || this
+      _this.guid = 0
+      _this.state = {
+        primitive: undefined,
+        props: {},
+        oldProps: {},
+        resolve: function resolve() {
+          return null
+        },
+      }
+
+      _this.next = function(primitive, props) {
+        return new Promise(function(resolve) {
+          _this.setState(function(state) {
+            return {
+              primitive: primitive,
+              props: props,
+              oldProps: _extends({}, _this.state.props),
+              resolve: resolve,
+            }
           })
-        }),
-        _temp) || _assertThisInitialized(_this)
-      )
+        })
+      }
+
+      return _this
     }
 
     var _proto = Keyframes.prototype
@@ -2934,7 +2931,7 @@ var Parallax =
     _inheritsLoose(Parallax, _React$PureComponent2)
 
     function Parallax() {
-      var _temp, _this3
+      var _this3
 
       for (
         var _len = arguments.length, args = new Array(_len), _key = 0;
@@ -2944,72 +2941,76 @@ var Parallax =
         args[_key] = arguments[_key]
       }
 
-      return (
-        ((_temp = _this3 =
-          _React$PureComponent2.call.apply(
-            _React$PureComponent2,
-            [this].concat(args)
-          ) || this),
-        (_this3.state = {
-          ready: false,
-        }),
-        (_this3.layers = []),
-        (_this3.space = 0),
-        (_this3.current = 0),
-        (_this3.offset = 0),
-        (_this3.busy = false),
-        (_this3.moveItems = function() {
-          _this3.layers.forEach(function(layer) {
-            return layer.setPosition(_this3.space, _this3.current)
-          })
+      _this3 =
+        _React$PureComponent2.call.apply(
+          _React$PureComponent2,
+          [this].concat(args)
+        ) || this
+      _this3.state = {
+        ready: false,
+      }
+      _this3.layers = []
+      _this3.space = 0
+      _this3.current = 0
+      _this3.offset = 0
+      _this3.busy = false
 
-          _this3.busy = false
-        }),
-        (_this3.scrollerRaf = function() {
-          return requestAnimationFrame(_this3.moveItems)
-        }),
-        (_this3.onScroll = function(event) {
-          var horizontal = _this3.props.horizontal
+      _this3.moveItems = function() {
+        _this3.layers.forEach(function(layer) {
+          return layer.setPosition(_this3.space, _this3.current)
+        })
 
-          if (!_this3.busy) {
-            _this3.busy = true
+        _this3.busy = false
+      }
 
-            _this3.scrollerRaf()
+      _this3.scrollerRaf = function() {
+        return requestAnimationFrame(_this3.moveItems)
+      }
 
-            _this3.current = event.target[getScrollType(horizontal)]
-          }
-        }),
-        (_this3.update = function() {
-          var _this3$props = _this3.props,
-            scrolling = _this3$props.scrolling,
-            horizontal = _this3$props.horizontal
-          var scrollType = getScrollType(horizontal)
-          if (!_this3.container) return
-          _this3.space =
-            _this3.container[horizontal ? 'clientWidth' : 'clientHeight']
-          if (scrolling) _this3.current = _this3.container[scrollType]
-          else
-            _this3.container[scrollType] = _this3.current =
-              _this3.offset * _this3.space
-          if (_this3.content)
-            _this3.content.style[horizontal ? 'width' : 'height'] =
-              _this3.space * _this3.props.pages + 'px'
+      _this3.onScroll = function(event) {
+        var horizontal = _this3.props.horizontal
 
-          _this3.layers.forEach(function(layer) {
-            layer.setHeight(_this3.space, true)
-            layer.setPosition(_this3.space, _this3.current, true)
-          })
-        }),
-        (_this3.updateRaf = function() {
-          requestAnimationFrame(_this3.update) // Some browsers don't fire on maximize
+        if (!_this3.busy) {
+          _this3.busy = true
 
-          setTimeout(_this3.update, 150)
-        }),
-        (_this3.scrollStop = function(event) {
-          return _this3.animatedScroll && _this3.animatedScroll.stopAnimation()
-        }),
-        _temp) || _assertThisInitialized(_this3)
-      )
+          _this3.scrollerRaf()
+
+          _this3.current = event.target[getScrollType(horizontal)]
+        }
+      }
+
+      _this3.update = function() {
+        var _this3$props = _this3.props,
+          scrolling = _this3$props.scrolling,
+          horizontal = _this3$props.horizontal
+        var scrollType = getScrollType(horizontal)
+        if (!_this3.container) return
+        _this3.space =
+          _this3.container[horizontal ? 'clientWidth' : 'clientHeight']
+        if (scrolling) _this3.current = _this3.container[scrollType]
+        else
+          _this3.container[scrollType] = _this3.current =
+            _this3.offset * _this3.space // if (this.content)
+        //   this.content.style[horizontal ? 'width' : 'height'] = `${this.space *
+        //     this.props.pages}px`
+
+        _this3.layers.forEach(function(layer) {
+          layer.setHeight(_this3.space, true)
+          layer.setPosition(_this3.space, _this3.current, true)
+        })
+      }
+
+      _this3.updateRaf = function() {
+        requestAnimationFrame(_this3.update) // Some browsers don't fire on maximize
+
+        setTimeout(_this3.update, 150)
+      }
+
+      _this3.scrollStop = function(event) {
+        return _this3.animatedScroll && _this3.animatedScroll.stopAnimation()
+      }
+
+      return _this3
     }
 
     var _proto2 = Parallax.prototype
@@ -3110,7 +3111,6 @@ var Parallax =
               (_extends3.MsTransform = START_TRANSLATE),
               (_extends3.transform = START_TRANSLATE_3D),
               (_extends3.overflow = 'hidden'),
-              (_extends3[horizontal ? 'width' : 'height'] = this.space * pages),
               _extends3),
               innerStyle
             ),

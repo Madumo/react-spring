@@ -205,7 +205,7 @@ var Easing =
     }
 
     Easing.sin = function sin(t) {
-      return 1 - Math.cos(t * Math.PI / 2)
+      return 1 - Math.cos((t * Math.PI) / 2)
     }
 
     Easing.circle = function circle(t) {
@@ -233,7 +233,7 @@ var Easing =
 
       var p = bounciness * Math.PI
       return function(t) {
-        return 1 - Math.pow(Math.cos(t * Math.PI / 2), 3) * Math.cos(t * p)
+        return 1 - Math.pow(Math.cos((t * Math.PI) / 2), 3) * Math.cos(t * p)
       }
     }
 
@@ -447,7 +447,7 @@ var OscillatorAnimation =
           position =
             _this._to -
             envelope *
-              ((v0 + zeta * omega0 * x0) / omega1 * Math.sin(omega1 * t) +
+              (((v0 + zeta * omega0 * x0) / omega1) * Math.sin(omega1 * t) +
                 x0 * Math.cos(omega1 * t)) // This looks crazy -- it's actually just the derivative of the
           // oscillation function
 
@@ -455,7 +455,7 @@ var OscillatorAnimation =
             zeta *
               omega0 *
               envelope *
-              (Math.sin(omega1 * t) * (v0 + zeta * omega0 * x0) / omega1 +
+              ((Math.sin(omega1 * t) * (v0 + zeta * omega0 * x0)) / omega1 +
                 x0 * Math.cos(omega1 * t)) -
             envelope *
               (Math.cos(omega1 * t) * (v0 + zeta * omega0 * x0) -
