@@ -37,6 +37,9 @@ const Content = ({ toggle, backgroundColor, fill, rotate, scale, shape }) => (
 export default class NativeSpringExample extends React.Component {
   state = { toggle: true }
   toggle = () => this.setState(state => ({ toggle: !state.toggle }))
+  componentDidMount() {
+    setInterval(() => this.forceUpdate(), 1000)
+  }
   render() {
     const toggle = this.state.toggle
     return (
@@ -52,6 +55,7 @@ export default class NativeSpringExample extends React.Component {
         }}
         toggle={this.toggle}
         children={Content}
+        onRest={() => console.log('done')}
       />
     )
   }

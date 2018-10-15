@@ -38,6 +38,8 @@ class Spring extends React.PureComponent {
     from: PropTypes.object,
     // Animates to ...
     to: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
+    // Callback when the animation starts to animate
+    onStart: PropTypes.func,
     // Callback when the animation comes to a still-stand
     onRest: PropTypes.func,
     // Frame by frame callback, first argument passed is the animated value
@@ -51,14 +53,16 @@ class Spring extends React.PureComponent {
     render: PropTypes.func,
     // Prevents animation if true, you can also pass individual keys
     immediate: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
-    // Won't start animations, so they can be controlled from outside
-    hold: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
     // Spring config ({ tension, friction, ... } or a function receiving a name)
     config: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
     // Animation start delay, optional
     delay: PropTypes.number,
     // When true it literally resets: from -> to
     reset: PropTypes.bool,
+    // Escape hatch for cases where you supply the same values, but need spring to
+    // animate anyway, this can be useful for animating "auto" for instance, where "auto"
+    // remains unchanged, but children change (which normally wouldn't trigger an animation update)
+    force: PropTypes.bool,
   }
   static defaultProps = {
     from: {},
@@ -66,7 +70,10 @@ class Spring extends React.PureComponent {
     config: config.default,
     native: false,
     immediate: false,
-    hold: false,
+    reset: false,
+    force: false,
+    impl: SpringAnimation,
+    inject: Globals.bugfixes,
   }
 }
 ```
@@ -88,7 +95,7 @@ class Transition extends React.PureComponent {
     enter: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
     // Unmount styles
     leave: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
-    //
+    // fires for nodes that are neither entering nor leaving
     update: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
     // A collection of unique keys that must match with the childrens order
     // Can be omitted if children/render aren't an array
@@ -216,23 +223,22 @@ class ParallaxLayer extends React.PureComponent {
 
 ```jsx
 export default class Keyframes extends React.Component {
-  static create = p => s => props => (
-    <Keyframes primitive={p} states={s} {...props} />
-  )
-  
+  static create = primitive => states => {
+    if (typeof states === 'function') states = { [DEFAULT]: states }
+    return props => (
+      <Keyframes primitive={primitive} states={states} {...props} />
+    )
+  }
+
   // Factory functions, take an object with named slots.
   // A slot can be raw-props, an array of props, or an async function
   static Spring = Keyframes.create(Spring)
   static Trail = Keyframes.create(Trail)
   static Transition = Keyframes.create(Transition)
-  // Names slot
-  state: PropTypes.string,
+
   static propTypes = {
-    // deprecated: callback which receives a function that that takes two arguments:
-    //     script={async next => {
-    //         next(primitive, props)
-    //     }}
-    script: PropTypes.func,
+    // Name of the current slot
+    state: PropTypes.string,
   }
 }
 ```

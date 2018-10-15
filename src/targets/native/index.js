@@ -5,14 +5,17 @@ import SpringAnimation from '../../animated/SpringAnimation'
 import controller from '../../animated/AnimatedController'
 import { interpolate } from '../../animated/AnimatedInterpolation'
 import animated from '../../animated/createAnimatedComponent'
-import Spring, { config } from '../../Spring'
+import { config } from '../shared/constants'
+import Spring from '../../Spring'
 import Transition from '../../Transition'
 import Trail from '../../Trail'
 import Keyframes from '../../Keyframes'
 import createInterpolation from '../shared/interpolation'
 import colorNames from '../shared/colors'
 import AnimatedTransform from './AnimatedTransform'
+import { View } from 'react-native'
 
+Globals.injectDefaultElement(View)
 Globals.injectInterpolation(createInterpolation)
 Globals.injectColorNames(colorNames)
 Globals.injectApplyAnimatedValues(

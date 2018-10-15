@@ -79,22 +79,20 @@ class Example extends React.Component {
             onFrame={({ t }) => this.handleUpdate(t, xd, yd, yr)}>
             {({ t }) => (
               <Group top={height / 2} left={width / 2}>
-                {root
-                  .descendants()
-                  .map((node, i) => (
-                    <animated.path
-                      className="path"
-                      d={t.interpolate(() => this.arc(node))}
-                      stroke="#373737"
-                      strokeWidth="2"
-                      fill={color(
-                        (node.children ? node.data : node.parent.data).name
-                      )}
-                      fillRule="evenodd"
-                      onClick={() => this.handleClick(node)}
-                      key={`node-${i}`}
-                    />
-                  ))}
+                {root.descendants().map((node, i) => (
+                  <animated.path
+                    className="path"
+                    d={t.interpolate(() => this.arc(node))}
+                    stroke="#373737"
+                    strokeWidth="2"
+                    fill={color(
+                      (node.children ? node.data : node.parent.data).name
+                    )}
+                    fillRule="evenodd"
+                    onClick={() => this.handleClick(node)}
+                    key={`node-${i}`}
+                  />
+                ))}
               </Group>
             )}
           </Spring>

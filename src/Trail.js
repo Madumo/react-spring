@@ -1,20 +1,24 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Spring, { config as springConfig } from './Spring'
+import Spring from './Spring'
+import { config as springConfig } from './targets/shared/constants'
 
 export default class Trail extends React.PureComponent {
   static propTypes = {
-    native: PropTypes.bool,
-    config: PropTypes.object,
-    from: PropTypes.object,
-    to: PropTypes.object,
+    /** Item keys (the same keys you'd hand over to react in a list). If you specify items, keys can be an accessor function (item => item.key) */
     keys: PropTypes.arrayOf(
       PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-    ),
+    ).isRequired,
+    /** Base values, optional */
+    from: PropTypes.object,
+    /** Animates to ... */
+    to: PropTypes.object,
+    /** An array of functions (props => view) */
     children: PropTypes.oneOfType([
       PropTypes.arrayOf(PropTypes.func),
       PropTypes.func,
     ]),
+    /** Same as children, but takes precedence if present */
     render: PropTypes.oneOfType([
       PropTypes.arrayOf(PropTypes.func),
       PropTypes.func,
@@ -40,7 +44,6 @@ export default class Trail extends React.PureComponent {
       from = {},
       to = {},
       native = false,
-      config = springConfig.default,
       keys,
       delay,
       onRest,
@@ -52,7 +55,7 @@ export default class Trail extends React.PureComponent {
       if (index === 0) return undefined
       else return Array.from(animations)[index - 1]
     }
-    const props = { ...extra, native, from, config, to }
+    const props = { ...extra, native, from, to }
     const target = render || children
     return target.map((child, i) => {
       const attachedHook = animation => hook(i, animation)
@@ -63,7 +66,7 @@ export default class Trail extends React.PureComponent {
           onRest={i === 0 ? onRest : null}
           key={keys[i]}
           {...props}
-          delay={firstDelay}
+          delay={firstDelay || undefined}
           attach={attachedHook}
           render={render && child}
           children={render ? children : child}

@@ -1,5 +1,14 @@
-import Animation from '../animated/Animation'
-import * as Globals from '../animated/Globals'
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+import { Animation, Globals } from 'react-spring'
 import Easing from './Easing'
 
 const easeInOut = Easing.inOut(Easing.ease)
@@ -9,6 +18,7 @@ let TimingAnimation = class TimingAnimation extends Animation {
     this._to = config.to
     this._easing = config.easing !== undefined ? config.easing : easeInOut
     this._duration = config.duration !== undefined ? config.duration : 500
+    this._delay = config.delay !== undefined ? config.delay : 0
   }
 
   start(fromValue, onUpdate, onEnd) {
@@ -17,17 +27,23 @@ let TimingAnimation = class TimingAnimation extends Animation {
     this._onUpdate = onUpdate
     this.__onEnd = onEnd
 
-    const start = () => {
-      if (this._duration === 0) {
-        this._onUpdate(this._to)
-        this.__debouncedOnEnd({ finished: true })
-      } else {
-        this._startTime = Date.now()
-        this._animationFrame = Globals.requestFrame(this.onUpdate)
+    if (this._delay > 0) {
+      if (this._timer) {
+        clearTimeout(this._timer)
+        this._timer = undefined
       }
-    }
+      this._timer = setTimeout(this.startAsync, this._delay)
+    } else this.startAsync()
+  }
 
-    start()
+  startAsync = () => {
+    if (this._duration === 0) {
+      this._onUpdate(this._to)
+      this.__debouncedOnEnd({ finished: true })
+    } else {
+      this._startTime = Date.now()
+      this._animationFrame = Globals.requestFrame(this.onUpdate)
+    }
   }
 
   onUpdate = () => {
@@ -52,7 +68,8 @@ let TimingAnimation = class TimingAnimation extends Animation {
 
   stop() {
     this.__active = false
-    clearTimeout(this._timeout)
+    clearTimeout(this._timer)
+    this._timer = undefined
     Globals.cancelFrame(this._animationFrame)
     this.__debouncedOnEnd({ finished: false })
   }

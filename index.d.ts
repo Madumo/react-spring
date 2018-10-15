@@ -1,216 +1,271 @@
-declare module 'react-spring' {
-  import { Component, PureComponent, ReactNode, ComponentClass } from 'react';
+import {
+  Component,
+  PureComponent,
+  ReactNode,
+  ComponentClass,
+  ComponentType,
+  Ref
+} from 'react'
 
-  export type SpringConfig = {
-    tension: number;
-    friction: number;
-  };
+export type SpringEasingFunc = (t: number) => number
 
-  type SpringProps<S extends object, DS extends object = {}> = {
-    /**
-     * Spring config ({ tension, friction })
-     * @default config.default
-     */
-    config?: SpringConfig | ((key: string) => SpringConfig);
-    /**
-     * Will skip rendering the component if true and write to the dom directly
-     * @default false
-     */
-    native?: boolean;
-    /**
-     * Base styles
-     * @default {}
-     */
-    from?: DS;
-    /**
-     * Animates to...
-     * @default {}
-     */
-    to: DS;
-    /**
-     * Callback when the animation comes to a still-stand
-     */
-    onRest?: () => void;
-    /**
-     * Frame by frame callback, first argument passed is the animated value
-     */
-    onFrame?: () => void;
-    /**
-     * Takes a function that receives interpolated styles
-     */
-    children?: (
-      params: DS & S,
-    ) => ReactNode | Array<(params: DS & S) => ReactNode>;
-    /**
-     * Same as children, but takes precedence if present
-     */
-    render?: (params: DS & S) => ReactNode;
-    /**
-     * Prevents animation if true, you can also pass individual keys
-     * @default false
-     */
-    immediate?: boolean | string[] | ((key: string) => boolean);
-    /**
-     * When true it literally resets: from -> to
-     * @default false
-     */
-    reset?: boolean;
-    /**
-     * Animation implementation
-     * @default SpringAnimation
-     */
-    impl?: any,
-    /**
-     * Inject props
-     * @default undefined
-     */
-    inject?: any,
-  };
+export interface SpringConfig {
+  tension?: number
+  friction?: number
+  velocity?: number
+  overshootClamping?: boolean
+  restSpeedThreshold?: number
+  restDisplacementThreshold?: number
 
-  export const config: {
-    /** default: { tension: 170, friction: 26 } */
-    default: SpringConfig;
-    /** gentle: { tension: 120, friction: 14 } */
-    gentle: SpringConfig;
-    /** wobbly: { tension: 180, friction: 12 } */
-    wobbly: SpringConfig;
-    /** stiff: { tension: 210, friction: 20 } */
-    stiff: SpringConfig;
-    /** slow: { tension: 280, friction: 60 } */
-    slow: SpringConfig;
-  };
+  duration?: number
+  easing?: SpringEasingFunc
+}
 
-  export class Spring<
-    S extends object,
-    DS extends object,
-  > extends PureComponent<SpringProps<S, DS>> {}
+type SpringRendererFunc<S extends object, DS extends object = {}> = (
+  params: DS & S
+) => ReactNode
 
-  export function interpolate(
-    parent: number[],
-    config: (...args: number[]) => any,
-  ): any;
+interface SpringProps<S extends object, DS extends object = {}> {
+  /**
+   * Spring config ({ tension, friction })
+   * @default config.default
+   */
+  config?: SpringConfig | ((key: string) => SpringConfig)
+  /**
+   * Will skip rendering the component if true and write to the dom directly
+   * @default false
+   */
+  native?: boolean
+  /**
+   * Base styles
+   * @default {}
+   */
+  from?: DS
+  /**
+   * Animates to...
+   * @default {}
+   */
+  to: DS
+  /**
+   * Callback when the animation starts to animate
+   */
+  onStart?: () => void
+  /**
+   * Callback when the animation comes to a still-stand
+   */
+  onRest?: (ds: DS) => void
+  /**
+   * Frame by frame callback, first argument passed is the animated value
+   */
+  onFrame?: () => void
+  /**
+   * Takes a function that receives interpolated styles
+   */
+  children?: SpringRendererFunc<S, DS> | Array<SpringRendererFunc<S, DS>>
+  /**
+   * Same as children, but takes precedence if present
+   */
+  render?: SpringRendererFunc<S, DS>
+  /**
+   * Prevents animation if true, you can also pass individual keys
+   * @default false
+   */
+  immediate?: boolean | string[] | ((key: string) => boolean)
+  /**
+   * When true it literally resets: from -> to
+   * @default false
+   */
+  reset?: boolean
+  /**
+   * Animation implementation
+   * @default SpringAnimation
+   */
+  impl?: any
+  /**
+   * Inject props
+   * @default undefined
+   */
+  inject?: any
+  /**
+   * Animation start delay, optional
+   */
+  delay?: number
+}
 
-  export const animated: {
-    [Tag in keyof JSX.IntrinsicElements]: ComponentClass<
-      JSX.IntrinsicElements[Tag]
-    >
-  };
+export const config: {
+  /** default: { tension: 170, friction: 26 } */
+  default: SpringConfig
+  /** gentle: { tension: 120, friction: 14 } */
+  gentle: SpringConfig
+  /** wobbly: { tension: 180, friction: 12 } */
+  wobbly: SpringConfig
+  /** stiff: { tension: 210, friction: 20 } */
+  stiff: SpringConfig
+  /** slow: { tension: 280, friction: 60 } */
+  slow: SpringConfig
+  /** molasses: { tension: 280, friction: 120 } */
+  molasses: SpringConfig
+}
 
-  type TransitionKeyProps = string | number;
-  type TransitionItemProps = string | number | object;
+export class Spring<S extends object, DS extends object> extends PureComponent<
+  SpringProps<S, DS> & S
+> {}
 
-  type TransitionProps<S extends object, DS extends object = {}> = {
-    /**
-     * Will skip rendering the component if true and write to the dom directly
-     * @default false
-     */
-    native?: boolean;
-    /**
-     * Spring config ({ tension, friction })
-     * @default config.default
-     */
-    config?: SpringConfig | ((key: string) => SpringConfig);
-    /**
-     * Base styles
-     * @default {}
-     */
-    from?: DS;
-    /**
-     * Animated styles when the component is mounted
-     * @default {}
-     */
-    enter?: DS;
-    /**
-     * Unmount styles
-     * @default {}
-     */
-    leave?: DS;
+export function interpolate(
+  parent: number[],
+  config: (...args: number[]) => any
+): any
 
-    update?: DS;
-    /**
-     * A collection of unique keys that must match with the childrens order
-     * Can be omitted if children/render aren't an array
-     * Can be a function, which then acts as a key-accessor which is useful when you use the items prop
-     * @default {}
-     */
-    keys?: ((params: any) => TransitionKeyProps) | Array<TransitionKeyProps> | TransitionKeyProps;
-    /**
-     * Optional. Let items refer to the actual data and from/enter/leaver/update can return per-object styles
-     * @default {}
-     */
-    items?: Array<TransitionItemProps> | TransitionItemProps;
+export const animated: {
+  <P>(comp: ComponentType<P>): ComponentType<P>;
+} & {
+  [Tag in keyof JSX.IntrinsicElements]: ComponentClass<
+    JSX.IntrinsicElements[Tag]
+  >
+}
 
-    children?: (
-      params: DS & S,
-    ) => ReactNode | Array<(params: DS & S) => ReactNode>;
+type TransitionKeyProps = string | number
+type TransitionItemProps = string | number | object
 
-    render?: (
-      params: DS & S,
-    ) => ReactNode | Array<(params: DS & S) => ReactNode>;
-  };
+interface TransitionProps<S extends object, DS extends object = {}> {
+  /**
+   * First render base values (initial from -> enter), if present overrides "from", can be "null" to skip first mounting transition, or: item => values
+   */
+  initial?: DS | null,
+  /**
+   * Will skip rendering the component if true and write to the dom directly
+   * @default false
+   */
+  native?: boolean
+  /**
+   * Spring config ({ tension, friction })
+   * @default config.default
+   */
+  config?: SpringConfig | ((key: string) => SpringConfig)
+  /**
+   * Base styles
+   * @default {}
+   */
+  from?: DS
+  /**
+   * Animated styles when the component is mounted
+   * @default {}
+   */
+  enter?: DS
+  /**
+   * Unmount styles
+   * @default {}
+   */
+  leave?: DS
 
-  export class Transition<
-    S extends object,
-    DS extends object,
-  > extends PureComponent<TransitionProps<S, DS>> {}
+  update?: DS
+  /**
+   * A collection of unique keys that must match with the childrens order
+   * Can be omitted if children/render aren't an array
+   * Can be a function, which then acts as a key-accessor which is useful when you use the items prop
+   * @default {}
+   */
+  keys?:
+    | ((params: TransitionItemProps) => TransitionKeyProps)
+    | Array<TransitionKeyProps>
+    | TransitionKeyProps
+  /**
+   * Optional. Let items refer to the actual data and from/enter/leaver/update can return per-object styles
+   * @default {}
+   */
+  items?: Array<TransitionItemProps> | TransitionItemProps
 
-  type TrailProps<S extends object, DS extends object = {}> = {
-    native?: boolean;
+  children?:
+    | SpringRendererFunc<S, DS>
+    | Array<SpringRendererFunc<S, DS>>
+    | boolean
 
-    config?: SpringConfig | ((key: string) => SpringConfig);
+  render?:
+    | SpringRendererFunc<S, DS>
+    | Array<SpringRendererFunc<S, DS>>
+    | boolean
+}
 
-    from?: DS;
+export class Transition<
+  S extends object,
+  DS extends object
+> extends PureComponent<TransitionProps<S, DS> & S> {}
 
-    to?: DS;
+type TrailKeyProps = string | number
+type TrailKeyItemProps = string | number | object
 
-    children: (
-      params: DS & S,
-    ) => ReactNode | Array<(params: DS & S) => ReactNode>;
+interface TrailProps<S extends object, DS extends object = {}> {
+  native?: boolean
 
-    render: (
-      params: DS & S,
-    ) => ReactNode | Array<(params: DS & S) => ReactNode>;
-  };
+  config?: SpringConfig | ((key: string) => SpringConfig)
 
-  export class Trail<
-    S extends object,
-    DS extends object,
-  > extends PureComponent<TrailProps<S, DS>> {}
+  from?: DS
 
-  type ParallaxProps<S extends object, DS extends object = {}> = {
-    pages: number;
+  to?: DS
 
-    config?: SpringConfig | ((key: string) => SpringConfig);
+  keys?:
+    | ((params: TrailKeyItemProps) => TrailKeyProps)
+    | Array<TrailKeyProps>
+    | TrailKeyProps
 
-    scrolling?: boolean;
+  children?: SpringRendererFunc<S, DS> | Array<SpringRendererFunc<S, DS>>
 
-    horizontal?: boolean;
-  };
+  render?: SpringRendererFunc<S, DS> | Array<SpringRendererFunc<S, DS>>
+}
 
-  export class Parallax<
-    S extends object,
-    DS extends object,
-  > extends PureComponent<ParallaxProps<S, DS>> {}
+export class Trail<S extends object, DS extends object> extends PureComponent<
+  TrailProps<S, DS> & S
+> {}
 
-  type ParallaxLayerProps<S extends object, DS extends object = {}> = {
-    factor?: number;
+interface ParallaxProps<S extends object, DS extends object = {}> {
+  pages: number
 
-    offset?: number;
+  config?: SpringConfig | ((key: string) => SpringConfig)
 
-    speed?: number;
-  };
+  scrolling?: boolean
 
-  export class ParallaxLayer<
-    S extends object,
-    DS extends object,
-  > extends PureComponent<ParallaxLayerProps<S, DS>> {}
+  horizontal?: boolean
 
-  type KeyframesProps<S extends object, DS extends object = {}> = {
-    script: (next: Function) => Function;
-  };
+  ref?: Ref<Parallax>
+}
 
-  export class Keyframes<
-    S extends object,
-    DS extends object,
-  > extends Component<KeyframesProps<S, DS>> {}
+export class Parallax<
+  S extends object = {},
+  DS extends object = {}
+> extends PureComponent<ParallaxProps<S, DS> & S> {
+  scrollTo: (offset: number) => void
+}
+
+interface ParallaxLayerProps<S extends object, DS extends object = {}> {
+  factor?: number
+
+  offset?: number
+
+  speed?: number
+}
+
+export class ParallaxLayer<
+  S extends object,
+  DS extends object
+> extends PureComponent<ParallaxLayerProps<S, DS> & S> {}
+
+interface KeyframesProps<S extends object, DS extends object = {}> {
+  state?: string
+}
+
+export class Keyframes<S extends object, DS extends object> extends PureComponent<
+  KeyframesProps<S, DS> & S
+> {
+  static create<S extends object, DS extends object>(
+    primitive: ComponentType
+  ): (states: object) => (props: object) => Keyframes<S, DS>
+  static Spring<S extends object, DS extends object>(
+    states: object
+  ): (props: object) => Keyframes<S | Pick<SpringProps<S,DS>, Exclude<keyof SpringProps<S,DS>, "to">>, DS>
+  static Trail<S extends object, DS extends object>(
+    states: object
+  ): (props: object) => Keyframes<S | Pick<TrailProps<S,DS>, Exclude<keyof TrailProps<S,DS>, "to">>, DS> 
+  static Transition<S extends object, DS extends object>(
+    states: object
+  ): (props: object) => Keyframes<S | Pick<TransitionProps<S,DS>, Exclude<keyof TransitionProps<S,DS>, "to">>, DS> 
 }

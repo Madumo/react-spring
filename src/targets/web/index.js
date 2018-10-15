@@ -6,7 +6,8 @@ import SpringAnimation from '../../animated/SpringAnimation'
 import controller from '../../animated/AnimatedController'
 import { interpolate } from '../../animated/AnimatedInterpolation'
 import animated from '../../animated/createAnimatedComponent'
-import Spring, { config } from '../../Spring'
+import { config } from '../shared/constants'
+import Spring from '../../Spring'
 import Transition from '../../Transition'
 import Trail from '../../Trail'
 import Keyframes from '../../Keyframes'
@@ -150,16 +151,10 @@ const domElements = [
   'tspan',
 ]
 
-const elements = domElements.reduce(
-  (acc, element) => ({ ...acc, [element]: animated(element) }),
-  {}
-)
-
-Object.assign(animated, elements)
-const createAnimatedComponent = comp =>
-  console.warn(
-    'createAnimatedComponent is deprecated, use animated(comp) instead'
-  ) || animated(comp)
+const extendedAnimated = domElements.reduce((acc, element) => {
+  acc[element] = animated(element)
+  return acc
+}, animated)
 
 export {
   Spring,
@@ -172,10 +167,8 @@ export {
   SpringAnimation,
   AnimatedValue,
   config,
-  animated,
+  extendedAnimated as animated,
   controller,
   interpolate,
-  // deprecated
-  createAnimatedComponent,
   Globals,
 }

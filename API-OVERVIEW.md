@@ -1,11 +1,12 @@
 # Table of Contents 👇
 
-* [Springs and basic interpolation](#springs-and-basic-interpolation)
-* [Render props](#render-props)
-* [Native rendering and interpolation](#native-rendering-and-interpolation-demo)
-* [Imperative Api](#imperative-api)
-* [Transitions](#transitions)
-* [Parallax and page transitions](#parallax-and-page-transitions)
+- [Springs and basic interpolation](#springs-and-basic-interpolation)
+- [Render props](#render-props)
+- [Native rendering and interpolation](#native-rendering-and-interpolation-demo)
+- [Imperative Api](#imperative-api)
+- [Transitions](#transitions)
+- [Keyframes](#keyframes)
+- [Parallax and page transitions](#parallax-and-page-transitions)
 
 # API overview 📖
 
@@ -27,7 +28,7 @@ You can interpolate almost everything, from numbers, colors, svg-paths, percenta
 }}>
 ```
 
-The `from` prop denotes initial values and `to` end-state values the spring will animate towards. Once the spring starts animating `from` plays no role any longer, it will from now on remember its current values and animate from there if you update `to`.  
+The `from` prop denotes initial values and `to` end-state values the spring will animate towards. Once the spring starts animating `from` plays no role any longer, it will from now on remember its current values and animate from there if you update `to`.
 
 A couple of extra props you might be interested in are `onRest`, which fires once the animations stops, `onFrame`, which fires on every frame and gives you the animation value, `reset`, which literally resets the spring so that it goes through `from` to `to` again, `immediate` which can enforce values to spring to their to-values immediately (can be `true` for a zero-time spring or a function which receives the key names and returns `true` or `false` individually).
 
@@ -39,7 +40,24 @@ react-spring is one of the few libs that understands and animates `auto`, so you
 <Spring from={{ height: 0 }} to={{ height: 'auto' }}>
 ```
 
-But keep in mind that in order to do this we have to measure out a snapshot set to `height/width: auto` before we can start animating it. If you notice that the measured bounds are wrong, give your view more context, for instance set the `position` attribute of the parent container (the element that contains your spring) to either `absolute` or `relative` so that the view (the element that's inside your spring) retains bounds.
+Keep in mind that in order to do this we have to measure out a snapshot set to `height/width: auto` before we can start animating it. There are some things you should watch out for:
+
+1.  **Wrong width/height**. If you notice that the measured bounds are wrong, give your view more context, for instance set the `position` attribute of the parent container (the element that contains your spring) to either `absolute` or `relative` so that the view (the element that's inside your spring) retains bounds.
+
+2.  **Contents change but won't animate**. If you set your spring to `auto` and later add or remove contents (children), it doesn't animate since it's essentially going from "auto" to "auto". In these rare cases you can use the `force` prop, which forces the spring to animate regardless of whether props are the same or not.
+
+```jsx
+<Spring force from={{ height: 0 }} to={{ height: 'auto' }}>
+  {items.map(id => <Item key={id} />)}
+```
+
+3.  **Nested auto-springs eat into their animations**. If you nest springs and click one open and close another, the measurements will conflict for a moment. There is no real solution here. Something you can do to help it is make sure springs animate with less precision so that they will complete faster.
+
+```jsx
+<Spring
+  from={{ height: 0 }} to={{ height: 'auto' }}
+  config={{ ...config.default, restSpeedThreshold: 1, restDisplacementThreshold: 0.1 }}>
+```
 
 ### Render props
 
@@ -71,7 +89,7 @@ By default we'll render every frame (like in the image on the left) as it gives 
 
 Just be aware of the following conditions:
 
-1.  `native` only animates styles and attributes
+1.  `native` only animates styles, attributes and children (as textContent)
 2.  The values you receive _are opaque objects, not regular values_
 3.  Receiving elements must be `animated.[elementName]`, for instance `div` becomes `animated.div`
 4.  If you need to interpolate styles use `interpolate`
@@ -206,6 +224,77 @@ import { Trail } from 'react-spring'
 <Trail from={{ opacity: 0 }} to={{ opacity: 1 }} keys={items.map(item => item.key)}>
     {items.map(item => styles => <div style={styles}>{item.text}</div>)}
 </Trail>
+```
+
+### Keyframes
+
+`Keyframes` allow you to chain, compose and orchestrate animations by creating predefined slots which you then execute by passing the `state` prop.
+
+The resulting primitive can receive all the generic properties you would normally give your springs, like `native`, `from`, and so on.
+
+```jsx
+import { Keyframes, config } from 'react-spring'
+
+// You can create keyframes for springs, trails and transitions
+const Container = Keyframes.Spring({
+    // Single props
+    show: { to: { opacity: 1 } },
+    // Chained animations (arrays)
+    showAndHide: [ { to: { opacity: 1 } }, { to: { opacity: 0 } }],
+    // Functions with side-effects with access to component props
+    wiggle: async (next, ownProps) => {
+        await next({ to: { x: 100 }, config: config.wobbly })
+        await delay(1000)
+        await next({ to: { x: 0 }, config: config.gentle })
+    }
+})
+
+<Container state="show">
+    {styles => <div style={styles}>Hello</div>}
+</Container>
+```
+
+There is a shortcut for low-level scripting by giving it a function instead of an object consisting of slots (good for loops and such). In this case the state prop can be omitted.
+
+```jsx
+// Will fade children in and out in a loop
+const Container = Keyframes.Spring(async next => {
+  while (true) {
+    await next({
+      reset: true,
+      from: { opacity: 0 },
+      to: { opacity: 1 },
+    })
+  }
+})
+
+<Container>
+    {styles => <div style={styles}>Hello</div>}
+</Container>
+```
+
+And another for arrays:
+
+```jsx
+const Container = Keyframes.Spring([
+  { to: { scale: 1.5 } },
+  { to: { scale: 1 } },
+])
+```
+
+`Spring` and `Trail` also have a `.to` shortcut to make it even leaner. It will try to interpolate animatable props, but you can still use regular Spring-props like delay, immediate and so on, just be aware that they are reserved.
+
+```jsx
+const Container = Keyframes.Spring.to([
+  { immediate: true, delay: 500, scale: 1.5 },
+  { scale: 1 },
+])
+```
+
+If you have made [your own animation primitive](https://github.com/drcmda/react-spring/issues/97#issuecomment-392380139) and want to drive it through keyframes, that is also doable:
+
+```jsx
+const Container = Keyframes.create(MyOwnPrimitive)({ ... })
 ```
 
 ### Parallax and page transitions

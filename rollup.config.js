@@ -1,10 +1,12 @@
+import path from 'path'
 import babel from 'rollup-plugin-babel'
 import resolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
 import { uglify } from 'rollup-plugin-uglify'
 import { sizeSnapshot } from 'rollup-plugin-size-snapshot'
 
-const external = id => !id.startsWith('.') && !id.startsWith('/')
+const root = process.platform === 'win32' ? path.resolve('/') : '/'
+const external = id => !id.startsWith('.') && !id.startsWith(root)
 
 const globals = {
   react: 'React',
@@ -16,12 +18,7 @@ const globals = {
 const getBabelOptions = ({ useESModules }) => ({
   exclude: '**/node_modules/**',
   runtimeHelpers: true,
-  plugins: [
-    [
-      '@babel/transform-runtime',
-      { regenerator: false, polyfill: false, useBuiltIns: true, useESModules },
-    ],
-  ],
+  plugins: [['@babel/transform-runtime', { regenerator: false, useESModules }]],
 })
 
 function createConfig(entry, out, name) {
@@ -30,9 +27,7 @@ function createConfig(entry, out, name) {
       input: `./src/${entry}.js`,
       output: { file: `dist/${out}.js`, format: 'esm' },
       external,
-      plugins: [
-        babel(getBabelOptions({ useESModules: true })) /*, sizeSnapshot()*/,
-      ],
+      plugins: [babel(getBabelOptions({ useESModules: true })), sizeSnapshot()],
     },
     {
       input: `./src/${entry}.js`,

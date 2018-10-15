@@ -1,30 +1,29 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import AnimatedValue from '../../animated/AnimatedValue'
+import { renderChildren, convertValues, getValues } from '../shared/helpers'
 
-const getValues = object => Object.keys(object).map(k => object[k])
 const check = value => value === 'auto'
-const convert = (acc, [name, value]) => ({
-  ...acc,
-  [name]: new AnimatedValue(value),
-})
 const overwrite = (width, height) => (acc, [name, value]) => ({
   ...acc,
   [name]: value === 'auto' ? (~name.indexOf('height') ? height : width) : value,
 })
 
-export default function fixAuto(spring, props) {
-  const { native, children, render, from, to } = props
+export default function fixAuto(props, callback) {
+  const { from, to } = props
 
   // Dry-route props back if nothing's using 'auto' in there
-  if (![...getValues(from), ...getValues(to)].some(check)) return
+  // TODO: deal with "null"
+  if (!(getValues(to).some(check) || getValues(from).some(check))) return
   // Fetch render v-dom
-  const element = spring.renderChildren(props, spring.convertValues(props))
+  const element = renderChildren(props, convertValues(props))
+  // A spring can return undefined/null, check against that (#153)
+  if (!element) return
   const elementStyles = element.props.style
 
   // Return v.dom with injected ref
   return (
     <element.type
+      key={element.key}
       {...element.props}
       style={{ ...elementStyles, position: 'absolute', visibility: 'hidden' }}
       ref={ref => {
@@ -34,8 +33,8 @@ export default function fixAuto(spring, props) {
           let width, height
           let cs = getComputedStyle(node)
           if (cs.boxSizing === 'border-box') {
-            width = node.clientWidth
-            height = node.clientHeight
+            width = node.offsetWidth
+            height = node.offsetHeight
           } else {
             const paddingX =
               parseFloat(cs.paddingLeft || 0) + parseFloat(cs.paddingRight || 0)
@@ -50,19 +49,13 @@ export default function fixAuto(spring, props) {
             width = node.offsetWidth - paddingX - borderX
             height = node.offsetHeight - paddingY - borderY
           }
-          // Defer to next frame, or else the springs updateToken is canceled
+
           const convert = overwrite(width, height)
-          requestAnimationFrame(() =>
-            spring.updateProps(
-              {
-                ...props,
-                from: Object.entries(from).reduce(convert, from),
-                to: Object.entries(to).reduce(convert, to),
-              },
-              true,
-              true
-            )
-          )
+          callback({
+            ...props,
+            from: Object.entries(from).reduce(convert, from),
+            to: Object.entries(to).reduce(convert, to),
+          })
         }
       }}
     />
